@@ -5,6 +5,7 @@ import MatrixHeader from './MatrixHeader';
 import EditTrainingColumnModal from './EditTrainingColumnModal';
 import { columnApi } from '../services/api';
 import EmployeeRow from './EmployeeRow';
+import { Calculator } from 'lucide-react';
 import type { Employee, TrainingColumn, MatrixCell as MatrixCellType } from '../types';
 
 interface MatrixGridProps {
@@ -98,6 +99,22 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
                     } : undefined}
                   />
                 ))}
+                {/* Total Score Column Header */}
+                <th className="px-6 py-6 text-center text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide relative group bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 min-w-[140px]">
+                  <div className="flex items-center justify-center space-x-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-center">
+                        <Calculator className="h-5 w-5 mr-2 text-primary-600 dark:text-primary-400" />
+                        <div className="truncate font-bold text-base" title="Total Score">
+                          Total Score
+                        </div>
+                      </div>
+                      <div className="text-sm text-gray-600 dark:text-gray-400 truncate mt-2 font-medium">
+                        Auto-calculated
+                      </div>
+                    </div>
+                  </div>
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">

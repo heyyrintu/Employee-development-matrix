@@ -154,27 +154,25 @@ const Dashboard: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="space-y-6">
         {/* Matrix Grid */}
-        <div className="lg:col-span-3">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200 dark:border-gray-700 overflow-hidden">
-            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Training Matrix</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Employee progress across training modules</p>
-            </div>
-            <div className="p-6">
-              <MatrixGrid
-                employees={matrixState.data?.employees || []}
-                columns={matrixState.data?.columns || []}
-                scores={matrixState.data?.scores || []}
-                settings={matrixState.data?.settings}
-              />
-            </div>
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Training Matrix</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Employee progress across training modules</p>
+          </div>
+          <div className="p-6">
+            <MatrixGrid
+              employees={matrixState.data?.employees || []}
+              columns={matrixState.data?.columns || []}
+              scores={matrixState.data?.scores || []}
+              settings={matrixState.data?.settings}
+            />
           </div>
         </div>
 
         {/* Analytics Panel */}
-        <div className="lg:col-span-1">
+        <div>
           <AnalyticsPanel data={analytics} />
         </div>
       </div>

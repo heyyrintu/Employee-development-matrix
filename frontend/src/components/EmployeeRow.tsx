@@ -3,6 +3,7 @@ import { User, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { employeeApi } from '../services/api';
 import MatrixCell from './MatrixCell';
+import TotalScoreCell from './TotalScoreCell';
 import type { Employee, TrainingColumn, MatrixCell as MatrixCellType } from '../types';
 
 interface EmployeeRowProps {
@@ -51,6 +52,18 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
 
   const isEditing = (columnId: string): boolean => {
     return editingCell?.employeeId === employee.id && editingCell?.columnId === columnId;
+  };
+
+  // Calculate total score for this employee
+  const calculateTotalScore = (): { totalScore: number; maxPossibleScore: number } => {
+    const totalScore = columns.reduce((sum, column) => {
+      const score = getScore(column.id);
+      return sum + (score?.level || 0);
+    }, 0);
+    
+    const maxPossibleScore = columns.length * 2; // Assuming max level is 2
+    
+    return { totalScore, maxPossibleScore };
   };
 
   return (
@@ -123,6 +136,16 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
           </td>
         );
       })}
+
+      {/* Total Score Cell */}
+      <td className="px-4 py-6 text-center align-middle">
+        <div className="flex justify-center items-center">
+          <TotalScoreCell
+            totalScore={calculateTotalScore().totalScore}
+            maxPossibleScore={calculateTotalScore().maxPossibleScore}
+          />
+        </div>
+      </td>
     </tr>
   );
 };
