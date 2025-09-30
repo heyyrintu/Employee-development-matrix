@@ -66,14 +66,14 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
     );
   }
 
-  return (
-    <div className="overflow-x-auto">
-      <div className="inline-block min-w-full align-middle">
-        <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
-            <thead className="bg-gray-50 dark:bg-gray-700">
+      return (
+        <div className="overflow-x-auto">
+          <div className="inline-block min-w-full align-middle">
+            <div className="overflow-hidden shadow-soft rounded-xl border border-gray-200 dark:border-gray-700">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
               <tr>
-                <th className="sticky left-0 z-10 bg-gray-50 dark:bg-gray-700 px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider border-r border-gray-200 dark:border-gray-600">
+                <th className="sticky left-0 z-10 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 px-6 py-6 text-left text-sm font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide border-r border-gray-200 dark:border-gray-600 min-w-[200px]">
                   Employee
                 </th>
                 {columns.map((column) => (
@@ -100,7 +100,7 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
                 ))}
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-600">
+            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
               {employees.map((employee) => (
                 <EmployeeRow
                   key={employee.id}

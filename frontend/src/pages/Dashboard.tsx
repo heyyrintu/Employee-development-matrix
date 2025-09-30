@@ -97,44 +97,54 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-            Employee Development Matrix
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Track training progress and skill development across your organization
-          </p>
-        </div>
-        <div className="flex space-x-3">
-          {(isAdmin() || isManager()) && (
-            <>
+          {/* Header */}
+          <div className="flex justify-between items-center mb-8">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                Employee Development Matrix
+              </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-400">
+                Track training progress and skill development across your organization
+              </p>
+              <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-primary-500 mr-2"></div>
+                  <span>Live Dashboard</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-2 h-2 rounded-full bg-secondary-500 mr-2"></div>
+                  <span>Real-time Updates</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex space-x-3">
+              {(isAdmin() || isManager()) && (
+                <>
+                  <button
+                    onClick={() => setShowEmployeeModal(true)}
+                    className="bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white px-6 py-3 rounded-lg font-medium flex items-center shadow-brand hover:shadow-medium transition-all duration-200"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add Employee
+                  </button>
+                  <button
+                    onClick={() => setShowColumnModal(true)}
+                    className="bg-gradient-to-r from-secondary-500 to-secondary-600 hover:from-secondary-600 hover:to-secondary-700 text-white px-6 py-3 rounded-lg font-medium flex items-center shadow-brand hover:shadow-medium transition-all duration-200"
+                  >
+                    <Plus className="h-5 w-5 mr-2" />
+                    Add Training
+                  </button>
+                </>
+              )}
               <button
-                onClick={() => setShowEmployeeModal(true)}
-                className="btn btn-primary flex items-center"
+                onClick={() => setShowExportModal(true)}
+                className="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 px-6 py-3 rounded-lg font-medium flex items-center shadow-soft hover:shadow-medium transition-all duration-200"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Employee
+                <Download className="h-5 w-5 mr-2" />
+                Export
               </button>
-              <button
-                onClick={() => setShowColumnModal(true)}
-                className="btn btn-secondary flex items-center"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Training
-              </button>
-            </>
-          )}
-          <button
-            onClick={() => setShowExportModal(true)}
-            className="btn btn-secondary flex items-center"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export
-          </button>
-        </div>
-      </div>
+            </div>
+          </div>
 
       {/* Filter Toolbar */}
       <FilterToolbar
@@ -147,13 +157,19 @@ const Dashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Matrix Grid */}
         <div className="lg:col-span-3">
-          <div className="card p-6">
-            <MatrixGrid
-              employees={matrixState.data?.employees || []}
-              columns={matrixState.data?.columns || []}
-              scores={matrixState.data?.scores || []}
-              settings={matrixState.data?.settings}
-            />
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-soft border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Training Matrix</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">Employee progress across training modules</p>
+            </div>
+            <div className="p-6">
+              <MatrixGrid
+                employees={matrixState.data?.employees || []}
+                columns={matrixState.data?.columns || []}
+                scores={matrixState.data?.scores || []}
+                settings={matrixState.data?.settings}
+              />
+            </div>
           </div>
         </div>
 
