@@ -61,7 +61,7 @@ function authReducer(state: AuthState, action: AuthAction): AuthState {
 
 interface AuthContextType {
   state: AuthState;
-  login: (username: string, role: 'admin' | 'manager' | 'employee') => void;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   hasPermission: (permission: string) => boolean;
   isAdmin: () => boolean;
@@ -74,19 +74,32 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  const login = (username: string, role: 'admin' | 'manager' | 'employee') => {
+  const login = async (username: string, password: string): Promise<boolean> => {
+    // Demo authentication with hardcoded credentials
+    const validCredentials = {
+      'drona': { password: '12345', role: 'admin' as const },
+      'manager': { password: '12345', role: 'manager' as const }
+    };
+
+    const credential = validCredentials[username as keyof typeof validCredentials];
+    
+    if (!credential || credential.password !== password) {
+      return false;
+    }
+
     const user: User = {
-      id: 1, // Mock ID for demo
+      id: 1,
       username,
-      role,
+      role: credential.role,
       is_active: true,
     };
     
-    localStorage.setItem('auth_token', 'mock_token');
-    localStorage.setItem('user_role', role);
+    localStorage.setItem('auth_token', `token_${username}`);
+    localStorage.setItem('user_role', credential.role);
     localStorage.setItem('username', username);
     
     dispatch({ type: 'LOGIN', payload: user });
+    return true;
   };
 
   const logout = () => {
@@ -135,8 +148,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
       dispatch({ type: 'SET_USER', payload: user });
     } else {
-      // For demo purposes, auto-login as admin
-      login('admin', 'admin');
+      // No auto-login, user must provide credentials
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   }, []);
 

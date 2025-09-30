@@ -98,8 +98,10 @@ async def get_theme(db: Session = Depends(get_db)):
     return settings_record.value.get("theme", "light")
 
 @router.put("/theme")
-async def update_theme(theme: str, db: Session = Depends(get_db)):
+async def update_theme(theme_data: Dict[str, str], db: Session = Depends(get_db)):
     """Update theme setting"""
+    theme = theme_data.get("theme") if isinstance(theme_data, dict) else theme_data
+    
     if theme not in ["light", "dark"]:
         raise HTTPException(status_code=400, detail="Theme must be 'light' or 'dark'")
     

@@ -5,10 +5,20 @@ import { Save, Palette, Target, EyeOff } from 'lucide-react';
 
 const Settings: React.FC = () => {
   const { state, updateSettings, updateTheme } = useSettings();
-  const { isAdmin } = useAuth();
+  const { state: authState, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+
+  // Show loading while authentication is being checked
+  if (authState.loading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <span className="ml-2 text-gray-600 dark:text-gray-400">Loading...</span>
+      </div>
+    );
+  }
 
   if (!isAdmin()) {
     return (
@@ -17,6 +27,12 @@ const Settings: React.FC = () => {
         <p className="text-gray-600 dark:text-gray-400">
           You need admin privileges to access settings.
         </p>
+        <div className="mt-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Current user: {authState.user?.username || 'Not logged in'} 
+            ({authState.user?.role || 'No role'})
+          </p>
+        </div>
       </div>
     );
   }
@@ -45,31 +61,61 @@ const Settings: React.FC = () => {
     const newLevels = [...state.settings.levels];
     newLevels[index] = { ...newLevels[index], [field]: value };
     
-    updateSettings({ levels: newLevels });
+    // Update the settings state immediately for UI feedback
+    try {
+      updateSettings({ levels: newLevels });
+      setSuccess(`${field} updated successfully`);
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (error) {
+      setError(`Failed to update ${field}`);
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
-  const addLevel = () => {
+  const addLevel = async () => {
     if (!state.settings?.levels) return;
 
+    const maxLevel = Math.max(...state.settings.levels.map(l => l.level));
     const newLevel = {
-      level: Math.max(...state.settings.levels.map(l => l.level)) + 1,
-      label: `Level ${Math.max(...state.settings.levels.map(l => l.level)) + 1}`,
+      level: maxLevel + 1,
+      label: `Level ${maxLevel + 1}`,
       color: '#6b7280',
       description: '',
     };
 
-    updateSettings({ levels: [...state.settings.levels, newLevel] });
+    try {
+      await updateSettings({ levels: [...state.settings.levels, newLevel] });
+      setSuccess('Level added successfully');
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (error) {
+      setError('Failed to add level');
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
-  const removeLevel = (index: number) => {
+  const removeLevel = async (index: number) => {
     if (!state.settings || state.settings.levels.length <= 1) return;
 
-    const newLevels = state.settings.levels.filter((_, i) => i !== index);
-    updateSettings({ levels: newLevels });
+    try {
+      const newLevels = state.settings.levels.filter((_, i) => i !== index);
+      await updateSettings({ levels: newLevels });
+      setSuccess('Level removed successfully');
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (error) {
+      setError('Failed to remove level');
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
-  const handleThemeChange = (theme: 'light' | 'dark') => {
-    updateTheme(theme);
+  const handleThemeChange = async (theme: 'light' | 'dark') => {
+    try {
+      await updateTheme(theme);
+      setSuccess(`Theme changed to ${theme} mode`);
+      setTimeout(() => setSuccess(null), 2000);
+    } catch (error) {
+      setError('Failed to change theme');
+      setTimeout(() => setError(null), 3000);
+    }
   };
 
   if (!state.settings) {

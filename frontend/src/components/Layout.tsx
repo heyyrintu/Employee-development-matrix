@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
+import LoginModal from './LoginModal';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -21,6 +22,7 @@ interface LayoutProps {
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const { state: authState, logout, isAdmin } = useAuth();
   const { state: settingsState, updateTheme } = useSettings();
   const location = useLocation();
@@ -159,33 +161,51 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
               {/* User menu */}
               <div className="ml-3 relative">
-                <div>
-                  <button
-                    type="button"
-                    className="max-w-xs bg-white dark:bg-gray-800 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                    onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  >
-                    <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
-                      <User className="h-5 w-5 text-primary-600 dark:text-primary-300" />
+                {authState.isAuthenticated ? (
+                  <>
+                    <div>
+                      <button
+                        type="button"
+                        className="max-w-xs bg-white dark:bg-gray-800 flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                        onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      >
+                        <div className="h-8 w-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center">
+                          <User className="h-5 w-5 text-primary-600 dark:text-primary-300" />
+                        </div>
+                      </button>
                     </div>
-                  </button>
-                </div>
-                {userMenuOpen && (
-                  <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                    <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
-                      <div className="font-medium">{authState.user?.username}</div>
-                      <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">
-                        {authState.user?.role}
+                    {userMenuOpen && (
+                      <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none">
+                        <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                          <div className="font-medium">{authState.user?.username}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                            {authState.user?.role}
+                          </div>
+                        </div>
+                        <button
+                          onClick={handleLogout}
+                          className="flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <LogOut className="mr-3 h-4 w-4" />
+                          Sign out
+                        </button>
+                        <button
+                          onClick={() => setLoginModalOpen(true)}
+                          className="flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        >
+                          <User className="mr-3 h-4 w-4" />
+                          Switch User
+                        </button>
                       </div>
-                    </div>
-                    <button
-                      onClick={handleLogout}
-                      className="flex w-full px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <LogOut className="mr-3 h-4 w-4" />
-                      Sign out
-                    </button>
-                  </div>
+                    )}
+                  </>
+                ) : (
+                  <button
+                    onClick={() => setLoginModalOpen(true)}
+                    className="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-md text-sm font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                  >
+                    Login
+                  </button>
                 )}
               </div>
             </div>
@@ -201,6 +221,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
         </main>
       </div>
+
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={loginModalOpen} 
+        onClose={() => setLoginModalOpen(false)} 
+      />
     </div>
   );
 };
