@@ -19,6 +19,13 @@ const Dashboard: React.FC = () => {
   const [showColumnModal, setShowColumnModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
 
+  // External reload trigger (e.g., after delete/update)
+  useEffect(() => {
+    const reload = () => loadMatrix();
+    window.addEventListener('matrix:reload', reload);
+    return () => window.removeEventListener('matrix:reload', reload);
+  }, []);
+
   // Load analytics data
   useEffect(() => {
     const loadAnalytics = async () => {

@@ -1,5 +1,7 @@
 import React from 'react';
-import { User } from 'lucide-react';
+import { User, Trash2 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { employeeApi } from '../services/api';
 import MatrixCell from './MatrixCell';
 import type { Employee, TrainingColumn, MatrixCell as MatrixCellType } from '../types';
 
@@ -22,6 +24,20 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
   onCellUpdate,
   onCellCancel,
 }) => {
+  const { hasPermission } = useAuth();
+
+  const handleDeleteEmployee = async () => {
+    if (!hasPermission('write')) return;
+    const confirmDelete = window.confirm(`Delete employee "${employee.name}"?`);
+    if (!confirmDelete) return;
+    try {
+      await employeeApi.delete(employee.id);
+      window.dispatchEvent(new CustomEvent('matrix:reload'));
+    } catch (e) {
+      console.error('Failed to delete employee', e);
+      alert('Failed to delete employee');
+    }
+  };
   const getScore = (columnId: string): MatrixCellType | undefined => {
     return scores.find(score => 
       score.employee_id === employee.id && score.column_id === columnId
@@ -71,6 +87,16 @@ const EmployeeRow: React.FC<EmployeeRowProps> = ({
               </div>
             )}
           </div>
+          {hasPermission('write') && (
+            <button
+              aria-label="Delete employee"
+              title="Delete employee"
+              onClick={handleDeleteEmployee}
+              className="ml-3 p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/30 text-red-600"
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </td>
 

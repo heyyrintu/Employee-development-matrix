@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useMatrix } from '../contexts/MatrixContext';
 import { useAuth } from '../contexts/AuthContext';
 import MatrixHeader from './MatrixHeader';
+import EditTrainingColumnModal from './EditTrainingColumnModal';
+import { columnApi } from '../services/api';
 import EmployeeRow from './EmployeeRow';
 import type { Employee, TrainingColumn, MatrixCell as MatrixCellType } from '../types';
 
@@ -20,6 +22,9 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
   const { updateScore } = useMatrix();
   const { hasPermission } = useAuth();
   const [editingCell, setEditingCell] = useState<{ employeeId: number; columnId: string } | null>(null);
+  const [editingColumn, setEditingColumn] = useState<TrainingColumn | null>(null);
+  const [, setBusy] = useState<string | null>(null);
+  const [, setMessage] = useState<string | null>(null);
 
   const handleCellClick = (employeeId: number, columnId: string) => {
     if (hasPermission('write')) {
@@ -75,8 +80,22 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
                   <MatrixHeader
                     key={column.id}
                     column={column}
-                    onEdit={hasPermission('write') ? () => {} : undefined}
-                    onDelete={hasPermission('write') ? () => {} : undefined}
+                    onEdit={hasPermission('write') ? () => setEditingColumn(column) : undefined}
+                    onDelete={hasPermission('write') ? async () => {
+                      try {
+                        setBusy(`delete-col-${column.id}`);
+                        await columnApi.delete(column.id);
+                        // Optimistic reload: Ask parent/context to reload matrix via window event
+                        setMessage('Column deleted');
+                        window.dispatchEvent(new CustomEvent('matrix:reload'));
+                      } catch (e) {
+                        console.error(e);
+                        setMessage('Failed to delete column');
+                      } finally {
+                        setBusy(null);
+                        setTimeout(() => setMessage(null), 2000);
+                      }
+                    } : undefined}
                   />
                 ))}
               </tr>
@@ -98,6 +117,18 @@ const MatrixGrid: React.FC<MatrixGridProps> = ({
           </table>
         </div>
       </div>
+      {editingColumn && (
+        <EditTrainingColumnModal
+          column={editingColumn}
+          onClose={() => setEditingColumn(null)}
+          onSuccess={() => {
+            setEditingColumn(null);
+            setMessage('Column updated');
+            window.dispatchEvent(new CustomEvent('matrix:reload'));
+            setTimeout(() => setMessage(null), 1500);
+          }}
+        />
+      )}
     </div>
   );
 };
