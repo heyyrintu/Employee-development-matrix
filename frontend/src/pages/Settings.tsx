@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Save, Palette, Target, EyeOff } from 'lucide-react';
 
 const Settings: React.FC = () => {
-  const { state, updateSettings, updateTheme } = useSettings();
+  const { state, updateSettings, updateTheme, updateLevels } = useSettings();
   const { state: authState, isAdmin } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,15 +55,15 @@ const Settings: React.FC = () => {
     }
   };
 
-  const handleLevelChange = (index: number, field: string, value: any) => {
+  const handleLevelChange = async (index: number, field: string, value: any) => {
     if (!state.settings?.levels) return;
 
     const newLevels = [...state.settings.levels];
     newLevels[index] = { ...newLevels[index], [field]: value };
     
-    // Update the settings state immediately for UI feedback
+    // Persist via dedicated levels endpoint to avoid race conditions
     try {
-      updateSettings({ levels: newLevels });
+      await updateLevels(newLevels);
       setSuccess(`${field} updated successfully`);
       setTimeout(() => setSuccess(null), 2000);
     } catch (error) {
@@ -84,7 +84,7 @@ const Settings: React.FC = () => {
     };
 
     try {
-      await updateSettings({ levels: [...state.settings.levels, newLevel] });
+      await updateLevels([...state.settings.levels, newLevel]);
       setSuccess('Level added successfully');
       setTimeout(() => setSuccess(null), 2000);
     } catch (error) {
@@ -98,7 +98,7 @@ const Settings: React.FC = () => {
 
     try {
       const newLevels = state.settings.levels.filter((_, i) => i !== index);
-      await updateSettings({ levels: newLevels });
+      await updateLevels(newLevels);
       setSuccess('Level removed successfully');
       setTimeout(() => setSuccess(null), 2000);
     } catch (error) {

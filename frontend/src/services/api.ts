@@ -231,7 +231,7 @@ export const settingsApi = {
   },
 
   getLevels: async (): Promise<AppSettings['levels']> => {
-    const response = await api.get('/settings/levels');
+    const response = await api.get('/settings/levels/');
     return response.data;
   },
 
@@ -245,7 +245,7 @@ export const settingsApi = {
   },
 
   updateTheme: async (theme: string): Promise<void> => {
-    await api.put('/settings/theme/', { theme });
+    await api.put('/settings/theme', { theme });
   },
 };
 

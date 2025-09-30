@@ -5,7 +5,9 @@ Handles application settings and configuration
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import Dict, Any
+from sqlalchemy.orm.attributes import flag_modified
+from typing import Dict, Any, List
+
 from ..core.database import get_db
 from ..core.models import Settings
 from ..core.schemas import AppSettings, SettingsUpdate
@@ -45,6 +47,7 @@ async def update_settings(settings_update: SettingsUpdate, db: Session = Depends
     try:
         validated_settings = AppSettings(**current_settings)
         settings_record.value = validated_settings.dict()
+        flag_modified(settings_record, "value")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid settings: {str(e)}")
     
@@ -65,7 +68,7 @@ async def get_levels(db: Session = Depends(get_db)):
     return settings.levels
 
 @router.put("/levels")
-async def update_levels(levels: list, db: Session = Depends(get_db)):
+async def update_levels(levels: List[Dict[str, Any]], db: Session = Depends(get_db)):
     """Update training level configuration"""
     settings_record = db.query(Settings).filter(Settings.key == "app_settings").first()
     
@@ -81,6 +84,7 @@ async def update_levels(levels: list, db: Session = Depends(get_db)):
     try:
         validated_settings = AppSettings(**current_settings)
         settings_record.value = validated_settings.dict()
+        flag_modified(settings_record, "value")
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid levels configuration: {str(e)}")
     
