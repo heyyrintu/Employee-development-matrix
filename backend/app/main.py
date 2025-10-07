@@ -3,7 +3,7 @@ Employee Development Matrix - FastAPI Application
 Main application entry point with CORS configuration and route registration
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -39,6 +39,35 @@ app.include_router(columns.router, prefix="/api/columns", tags=["columns"])
 app.include_router(scores.router, prefix="/api/scores", tags=["scores"])
 app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 app.include_router(matrix.router, prefix="/api/matrix", tags=["matrix"])
+
+DOCS_CSP = (
+    "default-src 'self'; "
+    "img-src 'self' data: https://fastapi.tiangolo.com https://cdn.jsdelivr.net; "
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net; "
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; "
+    "font-src 'self' data: https://cdn.jsdelivr.net; "
+    "connect-src 'self'"
+)
+
+
+DOCS_PATH_PREFIXES = (
+    "/docs",
+    "/redoc",
+    "/openapi.json",
+    "/api/docs",
+    "/api/redoc",
+    "/api/openapi.json",
+)
+
+
+@app.middleware("http")
+async def apply_docs_csp(request: Request, call_next):
+    """Attach a relaxed CSP for documentation routes that require eval-heavy vendor scripts."""
+
+    response = await call_next(request)
+    if request.url.path.startswith(DOCS_PATH_PREFIXES):
+        response.headers["Content-Security-Policy"] = DOCS_CSP
+    return response
 
 @app.get("/")
 async def root():

@@ -149,8 +149,8 @@ const Dashboard: React.FC = () => {
       {/* Filter Toolbar */}
       <FilterToolbar
         onFilterChange={handleFilterChange}
-        departments={matrixState.data?.employees.map(emp => emp.department).filter((dept): dept is string => Boolean(dept)) || []}
-        roles={matrixState.data?.employees.map(emp => emp.role) || []}
+        departments={matrixState.data?.employees?.map(emp => emp.department).filter((dept): dept is string => Boolean(dept)) || []}
+        roles={matrixState.data?.employees?.map(emp => emp.role) || []}
       />
 
       {/* Main Content */}
