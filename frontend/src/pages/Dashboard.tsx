@@ -31,9 +31,19 @@ const Dashboard: React.FC = () => {
     const loadAnalytics = async () => {
       try {
         const data = await matrixApi.getAnalytics();
+        console.log('Analytics data received:', data);
         setAnalytics(data);
       } catch (error) {
         console.error('Failed to load analytics:', error);
+        // Set empty analytics data to prevent crashes
+        setAnalytics({
+          skill_distribution: [],
+          total_employees: 0,
+          total_trainings: 0,
+          completion_rate: 0,
+          top_skills: [],
+          recent_activity: []
+        });
       }
     };
 

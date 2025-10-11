@@ -8,7 +8,7 @@ interface AnalyticsPanelProps {
 }
 
 const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ data }) => {
-  if (!data) {
+  if (!data || !data.skill_distribution || !data.top_skills || !data.recent_activity) {
     return (
       <div className="space-y-4">
         <div className="card p-4">
@@ -47,7 +47,7 @@ const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ data }) => {
                 <Users className="h-6 w-6 text-blue-600 dark:text-blue-300" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                {data.total_employees}
+                {data.total_employees || 0}
               </div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Employees</div>
             </div>
@@ -56,7 +56,7 @@ const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ data }) => {
                 <BookOpen className="h-6 w-6 text-green-600 dark:text-green-300" />
               </div>
               <div className="text-3xl font-bold text-gray-900 dark:text-white mb-1">
-                {data.total_trainings}
+                {data.total_trainings || 0}
               </div>
               <div className="text-sm font-medium text-gray-500 dark:text-gray-400">Trainings</div>
             </div>
@@ -68,7 +68,7 @@ const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ data }) => {
                 <span className="text-base font-medium text-gray-600 dark:text-gray-400">Completion Rate</span>
               </div>
               <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {data.completion_rate}%
+                {data.completion_rate || 0}%
               </span>
             </div>
           </div>
