@@ -3,26 +3,24 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: edm-backend
     environment:
       - DATABASE_URL=sqlite:///./data/app.db
-      - CORS_ORIGINS=http://localhost:8010,http://frontend:3000
+      - CORS_ORIGINS=http://frontend:3000
     volumes:
       - ./data:/app/data
       - ./seed:/app/seed
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: edm-frontend
     environment:
-      - VITE_API_URL=http://localhost:8010/api
-    ports:
-      - "3000:3000"
+      - VITE_API_URL=http://nginx:8010/api
+    expose:
+      - "3000"
     depends_on:
       - backend
     restart: unless-stopped
@@ -31,9 +29,8 @@ services:
     build:
       context: .
       dockerfile: nginx.Dockerfile
-    container_name: edm-nginx
-    ports:
-      - "8010:8010"
+    expose:
+      - "8010"
     depends_on:
       - frontend
       - backend
